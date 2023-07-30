@@ -1,7 +1,7 @@
 import express from 'express'
-import { MessageManagerDB } from '../DAO/DB/MessageManagerDB.js'
+import { MessageManagerDBService } from '../services/message.service.js'
 export const chatRouter = express.Router()
-const MessageManager = new MessageManagerDB()
+const MessageManager = new MessageManagerDBService()
 chatRouter.get('/', async (req, res) => {
   const { logged, user } = req.query
   const messages = await MessageManager.getMessages()

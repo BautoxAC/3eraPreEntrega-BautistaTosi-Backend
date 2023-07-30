@@ -1,6 +1,6 @@
-import { CartManagerDB } from '../services/carts.service.js'
+import { CartManagerDBService } from '../services/carts.service.js'
 import { newMessage } from '../utils.js'
-const list = new CartManagerDB()
+const list = new CartManagerDBService()
 export class CartsController {
   async getCartById (req, res) {
     const Id = req.params.cid

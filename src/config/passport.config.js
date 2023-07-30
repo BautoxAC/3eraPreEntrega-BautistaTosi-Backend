@@ -3,11 +3,11 @@ import GitHubStrategy from 'passport-github2'
 import passport from 'passport'
 import local from 'passport-local'
 import { createHash, isValidPassword } from '../utils.js'
-import { CartManagerDB } from '../DAO/DB/CartManagerDB.js'
+import { CartManagerDBService } from '../services/carts.service.js'
 import config from './env.config.js'
 const LocalStrategy = local.Strategy
 const { clientID, clientSecret, port } = config
-const cartManager = new CartManagerDB()
+const cartManager = new CartManagerDBService()
 // ---------------- GITHUB PASSPORT ----------------
 export function iniPassPortLocalAndGithub () {
   passport.use(

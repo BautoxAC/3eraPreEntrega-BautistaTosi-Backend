@@ -1,11 +1,12 @@
-import { cartModel } from '../DAO/models/carts.model.js'
+import { CartManagerDBDAO } from '../DAO/DB/cartManagerDB.dao.js'
 import { newMessage } from '../utils.js'
-import { Productmodel } from '../DAO/models/products.model.js'
-import { ProductManagerDB } from './products.service.js'
-export class CartManagerDB {
+import { ProductManagerDBService } from './products.service.js'
+const listProducts = new ProductManagerDBService()
+const CartManagerDAO = new CartManagerDBDAO()
+export class CartManagerDBService {
   async getCartById (id) {
     try {
-      const cartFindId = await cartModel.findOne({ _id: id }).populate('products.idProduct').lean()
+      const cartFindId = await CartManagerDAO.getCartById(id)
       if (cartFindId) {
         return newMessage('success', 'Found successfully', cartFindId.products || [])
       } else {
@@ -13,25 +14,23 @@ export class CartManagerDB {
       }
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 
   async addCart () {
     try {
-      await cartModel.create({ products: [] })
-      const lastAdded = await cartModel.findOne({}).sort({ _id: -1 }).lean()
+      const lastAdded = await CartManagerDAO.addCart()
       return newMessage('success', 'cart added successfully', lastAdded)
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 
   async addProduct (idCart, idProduct) {
     try {
-      const listProducts = new ProductManagerDB()
-      const cart = await cartModel.findOne({ _id: idCart }).lean()
+      const cart = await CartManagerDAO.getCartById(idCart)
       if (!cart) {
         return newMessage('failure', 'cart not found', '')
       }
@@ -54,25 +53,25 @@ export class CartManagerDB {
         cart.products.push({ idProduct: product._id, quantity: 1 })
         messageReturn = newMessage('success', 'Product added correctly', cart)
       }
-      await cartModel.updateOne({ _id: cart._id }, cart)
+      await CartManagerDAO.addProduct(cart)
       return messageReturn
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 
   async deleteProduct (idCart, idProduct) {
     try {
-      const cartFindId = await cartModel.findOne({ _id: idCart }).lean()
+      const cartFindId = await CartManagerDAO.getCartById(idCart)
       const cartProducts = cartFindId.products
       const positionProduct = cartFindId.products.indexOf(cartFindId.products.find(pro => pro.idProduct === idProduct))
       cartProducts.splice(positionProduct, 1)
-      await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
+      await CartManagerDAO.deleteProduct(cartFindId)
       return newMessage('success', 'product deleted', cartFindId)
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 
@@ -82,28 +81,28 @@ export class CartManagerDB {
         throw new Error('You must pass an array and at least one product')
       }
       for (const product of products) {
-        const productExist = await Productmodel.findOne({ _id: product.idProduct })
+        const productExist = await listProducts.getProductById(product.id)
         if (!productExist) {
           throw new Error(`The product with the id (${product.idProduct}) does not exist`)
         }
         const idRepeated = products.filter(pro => pro.idProduct === product.idProduct)
         if (idRepeated.length === 2) { throw new Error(`The product with the id (${product.idProduct}) is repeated in the array you passed`) }
       }
-      const cartFindId = await cartModel.findOne({ _id: idCart }).lean()
+      const cartFindId = await CartManagerDAO.getCartById(idCart)
       cartFindId.products = products
-      await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
+      await CartManagerDAO.addNewProducts(cartFindId)
       return newMessage('success', 'products updated', cartFindId)
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 
   async deleteAllProducts (idCart) {
     try {
-      const cartFindId = await cartModel.findOne({ _id: idCart }).lean()
+      const cartFindId = await CartManagerDAO.getCartById(idCart)
       cartFindId.products = []
-      await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
+      await CartManagerDAO.deleteAllProducts(cartFindId)
       return newMessage('success', 'products emptied', cartFindId)
     } catch (e) {
       console.log(e)
@@ -115,16 +114,16 @@ export class CartManagerDB {
     try {
       const quantityNumber = Object.values(quantity)
       if (typeof (quantityNumber[0]) !== 'number') { return newMessage('failure', 'the quantity must be a number', '') }
-      const cartFindId = await cartModel.findOne({ _id: idCart }).lean()
+      const cartFindId = await CartManagerDAO.getProductById(idCart)
       const cartProducts = cartFindId.products
       const productToUpdate = cartProducts.find(pro => pro.idProduct === idProduct)
       if (!productToUpdate) { return newMessage('failure', 'the product was not found inside the cart', '') }
       productToUpdate.quantity = quantityNumber[0]
-      await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
+      await CartManagerDAO.updateQuantityProduct(cartFindId)
       return newMessage('success', 'the quantity of product was updated', cartFindId)
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 }

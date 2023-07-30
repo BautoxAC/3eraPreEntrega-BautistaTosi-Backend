@@ -1,8 +1,8 @@
-import { ProductManagerDB } from '../services/products.service.js'
+import { ProductManagerDBService } from '../services/products.service.js'
 import { newMessage } from '../utils.js'
 import config from './../config/env.config.js'
 const { port } = config
-const list = new ProductManagerDB()
+const list = new ProductManagerDBService()
 export class ProductsAPIController {
   async getProducts (req, res) {
     const { limit, page, query, sort } = req.query

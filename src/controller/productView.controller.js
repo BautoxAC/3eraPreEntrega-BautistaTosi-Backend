@@ -1,7 +1,7 @@
-import { ProductManagerDB } from '../services/products.service.js'
+import { ProductManagerDBService } from '../services/products.service.js'
 import config from './../config/env.config.js'
 const { port } = config
-const list = new ProductManagerDB()
+const list = new ProductManagerDBService()
 export class ProductViewController {
   async renderAllProducts (req, res) {
     const url = `http://localhost:${port}/api/products`

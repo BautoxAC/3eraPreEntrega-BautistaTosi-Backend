@@ -1,5 +1,5 @@
-import { CartManagerDB } from '../services/carts.service.js'
-const list = new CartManagerDB()
+import { CartManagerDBService } from '../services/carts.service.js'
+const list = new CartManagerDBService()
 export class CartViewController {
   async getCartByIdToView (req, res) {
     const Id = req.params.cid

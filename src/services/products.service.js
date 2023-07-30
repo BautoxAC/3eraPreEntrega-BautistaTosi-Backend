@@ -1,6 +1,7 @@
-import { Productmodel } from '../DAO/models/products.model.js'
+import { ProductManagerDBDAO } from '../DAO/DB/productManagerDB.dao.js'
 import { newMessage } from '../utils.js'
-export class ProductManagerDB {
+const ProductManagerDAO = new ProductManagerDBDAO()
+export class ProductManagerDBService {
   async addProduct (title, description, price, thumbnails, code, stock) {
     try {
       const product = { title, description, price: Number(price), thumbnails: thumbnails !== undefined && [thumbnails], code, stock: Number(stock) }
@@ -19,13 +20,12 @@ export class ProductManagerDB {
       } else if (!addPro) {
         return newMessage('failure', 'Error, data is incomplete please provide more data and the stock and the price must be numbers', '')
       } else {
-        await Productmodel.create(product)
-        const lastAdded = await Productmodel.findOne({}).sort({ _id: -1 }).lean()
+        const lastAdded = await ProductManagerDAO.addProduct(product)
         return newMessage('success', 'Product added successfully', lastAdded)
       }
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 
@@ -60,11 +60,11 @@ export class ProductManagerDB {
           prop.status ? messages.push(`Must be ${sameKey?.type}`) : messages.push('The prop must be title, description, price, thumbnails, code or stock')
         }
       }
-      await Productmodel.updateOne({ _id: productToUpdate._id.toString() }, productToUpdate)
+      await ProductManagerDAO.updateProduct(productToUpdate)
       return newMessage('success', 'Updated successfully' + (messages).toString(), productToUpdate)
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 
@@ -79,17 +79,17 @@ export class ProductManagerDB {
       }
     }
     try {
-      const { docs, ...rest } = await Productmodel.paginate({ [query && 'category']: query }, { limit: limit || 10, page: page || 1, sort: { price: sort || null }, lean: true })
+      const { docs, rest } = await ProductManagerDAO.getProducts(limit, page, query, sort)
       return res('success', docs, rest)
     } catch (e) {
       console.log(e)
-      return res('error', {}, {})
+      return res(e, {}, {})
     }
   }
 
   async getProductById (id) {
     try {
-      const productFindId = await Productmodel.findOne({ _id: id }).lean()
+      const productFindId = await ProductManagerDAO.getProductById(id)
       if (productFindId) {
         return newMessage('success', 'Found successfully', productFindId)
       } else {
@@ -97,17 +97,17 @@ export class ProductManagerDB {
       }
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 
   async deleteProduct (id) {
     try {
-      const productToDelete = await Productmodel.deleteOne({ _id: id })
+      const productToDelete = await ProductManagerDAO.deleteProduct(id)
       return newMessage('success', 'Deleted successfully', productToDelete)
     } catch (e) {
       console.log(e)
-      return newMessage('failure', 'A problem ocurred', '')
+      return newMessage('failure', 'A problem ocurred', e)
     }
   }
 }

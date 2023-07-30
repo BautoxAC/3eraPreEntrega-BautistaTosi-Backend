@@ -1,8 +1,8 @@
 import multer from 'multer'
 import { Server } from 'socket.io'
-import { CartManagerDB } from './DAO/DB/CartManagerDB.js'
-import { MessageManagerDB } from './DAO/DB/MessageManagerDB.js'
-import { ProductManagerDB } from './DAO/DB/ProductManagerDB.js'
+import { CartManagerDBDAO } from './DAO/DB/cartManagerDB.dao.js'
+import { MessageManagerDBDAO } from './DAO/DB/messageManagerDB.dao.js'
+import { ProductManagerDBDAO } from './DAO/DB/productManagerDB.dao.js'
 import { cartModel } from './DAO/models/carts.model.js'
 import { userModel } from './DAO/models/users.model.js'
 import config from './config/env.config.js'
@@ -39,9 +39,9 @@ export function connectSocketServer (httpServer) {
   socketServer.on('connection', async (socket) => {
     console.log('cliente conectado')
     // vista /chat
-    const MessageManager = new MessageManagerDB()
-    const list = new ProductManagerDB()
-    const CartManager = new CartManagerDB()
+    const MessageManager = new MessageManagerDBDAO()
+    const list = new ProductManagerDBDAO()
+    const CartManager = new CartManagerDBDAO()
 
     socket.on('new_message_front_to_back', async (message, userName) => {
       try {
