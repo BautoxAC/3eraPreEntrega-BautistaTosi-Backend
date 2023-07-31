@@ -3,7 +3,6 @@ import { Schema, model } from 'mongoose'
 const productSchema = new Schema({
   idProduct: {
     type: Schema.Types.ObjectId,
-    unique: true,
     ref: 'products'
   },
   quantity: { type: Number }

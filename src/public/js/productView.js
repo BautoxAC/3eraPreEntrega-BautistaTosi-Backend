@@ -25,7 +25,7 @@ async function requestAPI () {
 requestAPI()
 socket.on('add_product_to_cart_back_to_front', (data) => {
   if (data.status === 'success') {
-    alert(`producto agregado correctamente, puedes encontrar tu carrito aqui: ${url}/carts/${data.cartId}`)
+    alert('producto agregado correctamente')
   } else {
     alert('ha ocurrido un error')
   }

@@ -1,6 +1,6 @@
 import { cartModel } from '../models/carts.model.js'
 export class CartManagerDBDAO {
-  async getCartById (id) {
+  async getCartById(id) {
     try {
       const cartFindId = await cartModel.findOne({ _id: id }).populate('products.idProduct').lean()
       return cartFindId
@@ -10,10 +10,9 @@ export class CartManagerDBDAO {
     }
   }
 
-  async addCart () {
+  async addCart() {
     try {
-      await cartModel.create({ products: [] })
-      const lastAdded = await cartModel.findOne({}).sort({ _id: -1 }).lean()
+      const lastAdded = await cartModel.create({ products: [] })
       return lastAdded
     } catch (e) {
       console.log(e)
@@ -21,7 +20,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async addProduct (cart) {
+  async addProduct(cart) {
     try {
       await cartModel.updateOne({ _id: cart._id }, cart)
       return cart
@@ -31,7 +30,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async deleteProduct (cartFindId) {
+  async deleteProduct(cartFindId) {
     try {
       await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
       return cartFindId
@@ -41,7 +40,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async addNewProducts (cartFindId) {
+  async addNewProducts(cartFindId) {
     try {
       await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
       return cartFindId
@@ -51,7 +50,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async deleteAllProducts (cartFindId) {
+  async deleteAllProducts(cartFindId) {
     try {
       await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
       return cartFindId
@@ -61,7 +60,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async updateQuantityProduct (cartFindId) {
+  async updateQuantityProduct(cartFindId) {
     try {
       await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
       return cartFindId
