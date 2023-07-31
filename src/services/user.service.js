@@ -2,7 +2,7 @@ import { UserManagerDBDAO } from '../DAO/DB/userManagerDB.dao.js'
 import { newMessage } from '../utils.js'
 const UserManagerDB = new UserManagerDBDAO()
 export class UserManagerDBService {
-  async addUsser(userPassword, userName) {
+  async addUsser (userPassword, userName) {
     try {
       const user = UserManagerDB.addUsser(userPassword, userName)
       return newMessage('success', 'user Created successfully', user)
@@ -12,7 +12,7 @@ export class UserManagerDBService {
     }
   }
 
-  async getUserByUserName(userName) {
+  async getUserByUserName (userName) {
     try {
       const user = await UserManagerDB.getUserByUserName(userName)
       return newMessage('success', 'user Found successfully', user)

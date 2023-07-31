@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-undef
 const socket = io()
+const url = window.location.origin
 const code = document.getElementById('code')
 const title = document.getElementById('title')
 const description = document.getElementById('description')
@@ -7,7 +8,7 @@ const stock = document.getElementById('stock')
 const file = document.getElementById('file')
 const price = document.getElementById('price')
 const list = document.getElementById('list')
-function renderProducts (products) {
+function renderProducts(products) {
   list.innerHTML = ''
   for (let i = 0; i < products.length; i++) {
     const product = products[i]
@@ -20,7 +21,7 @@ function renderProducts (products) {
         <p>Codigo: ${product.code}</p>
         <p>Id: ${product._id}</p>
         <p>Img: ${imgs}</p>
-        <button id="${product._id}"><img src="http://localhost:8080/assets/quitar.png" alt="Eliminar producto"
+        <button id="${product._id}"><img src="quitar.png" alt="Eliminar producto"
         title="Eliminar producto"></button>
         </li>`
   }
@@ -33,7 +34,7 @@ function renderProducts (products) {
   }
 }
 document.getElementById('buttonSumbit').addEventListener('click', () => {
-  const data = { title: title.value, description: description.value, price: Number(price.value), thumbnails: file?.files[0]?.name ? 'http://localhost:8080/' + file?.files[0]?.name : undefined, code: code.value, stock: Number(stock.value) }
+  const data = { title: title.value, description: description.value, price: Number(price.value), thumbnails: file?.files[0]?.name ? url + file?.files[0]?.name : undefined, code: code.value, stock: Number(stock.value) }
   socket.emit('msg_front_to_back', { data })
 })
 socket.on('newProduct_to_front', (product, products) => {
@@ -44,7 +45,8 @@ socket.on('newProduct_to_front', (product, products) => {
     renderProducts(products)
   }
 })
-socket.on('msg_back_to_front_products', (products) => {
+socket.on('msg_back_to_front_products', ({ docs }) => {
+  const products = docs
   renderProducts(products)
   for (let i = 0; i < products.length; i++) {
     const product = products[i]

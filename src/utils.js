@@ -1,10 +1,9 @@
 import multer from 'multer'
 import { Server } from 'socket.io'
-import { CartManagerDBDAO } from './DAO/DB/cartManagerDB.dao.js'
-import { MessageManagerDBDAO } from './DAO/DB/messageManagerDB.dao.js'
+import { ChatManagerDBDAO } from './DAO/DB/chatManagerDB.dao.js'
 import { ProductManagerDBDAO } from './DAO/DB/productManagerDB.dao.js'
-import { cartModel } from './DAO/models/carts.model.js'
-import { userModel } from './DAO/models/users.model.js'
+import { CartManagerDBService } from './services/carts.service.js'
+import { UserManagerDBService } from './services/user.service.js'
 import config from './config/env.config.js'
 // ----------------DIRNAME------------
 import path from 'path'
@@ -29,20 +28,20 @@ export const __filename = fileURLToPath(import.meta.url)
 export const __dirname = path.dirname(__filename)
 
 // -------------Mensaje de status---------------------------
-export function newMessage (status, message, data) {
+export function newMessage(status, message, data) {
   return { status, message, data }
 }
 
 // --------------Socket Server---------------------------
-export function connectSocketServer (httpServer) {
+export function connectSocketServer(httpServer) {
   const socketServer = new Server(httpServer)
   socketServer.on('connection', async (socket) => {
     console.log('cliente conectado')
     // vista /chat
-    const MessageManager = new MessageManagerDBDAO()
+    const MessageManager = new ChatManagerDBDAO()
     const list = new ProductManagerDBDAO()
-    const CartManager = new CartManagerDBDAO()
-
+    const CartManager = new CartManagerDBService()
+    const userManager = new UserManagerDBService()
     socket.on('new_message_front_to_back', async (message, userName) => {
       try {
         await MessageManager.addMessage(message, userName)
@@ -56,7 +55,7 @@ export function connectSocketServer (httpServer) {
     socket.on('msg_front_to_back', async (data) => {
       try {
         const { title, description, price, thumbnails, code, stock } = data.data
-        socket.emit('newProduct_to_front', await list.addProduct(title, description, price, thumbnails, code, stock), await list.getProducts())
+        socket.emit('newProduct_to_front', await list.addProduct({ title, description, price, thumbnails, code, stock, category: 'remera' }), await list.getProducts())
       } catch (e) {
         console.log(e)
         socket.emit('newProduct_to_front', { status: 'failure', message: 'something went wrong :(', data: {} })
@@ -69,17 +68,19 @@ export function connectSocketServer (httpServer) {
     })
     // vista /products
     socket.on('add_product_to_cart_front_to_back', async ({ idProduct, email }) => {
-      const user = await userModel.findOne({ email })
-      const cart = await cartModel.findOne({ _id: user.cart._id })
-      const { _id } = cart
-      const { status } = await CartManager.addProduct(_id, idProduct)
-      socket.emit('add_product_to_cart_back_to_front', { status, cartId: _id })
+      try {
+        const user = await userManager.getUserByUserName(email)
+        const { status } = await CartManager.addProduct(user.data.cart, idProduct)
+        socket.emit('add_product_to_cart_back_to_front', { status, cartId: user.data.cart })
+      } catch (e) {
+        console.log(e)
+      }
     })
   })
 }
 // ------------ MONGO DB ------------------
 const { mongoUrl } = config
-export async function connectMongo () {
+export async function connectMongo() {
   try {
     await connect(`${mongoUrl}`)
   } catch (e) {

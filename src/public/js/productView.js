@@ -1,11 +1,12 @@
-const url = 'http://localhost:8080/'
+const url = window.location.origin
 const URLactual = window.location.href
+const port = window.location.port
 const queries = URLactual.split('?')
 // eslint-disable-next-line no-undef
 const socket = io()
 const email = document.getElementById('email')
 async function requestAPI () {
-  await fetch(`http://localhost:8080/api/products?${queries[1]}`)
+  await fetch(`http://localhost:${port}/api/products?${queries[1]}`)
     .then(res => res.json())
     .then(data => {
       for (const product of data.payload) {
@@ -24,7 +25,7 @@ async function requestAPI () {
 requestAPI()
 socket.on('add_product_to_cart_back_to_front', (data) => {
   if (data.status === 'success') {
-    alert(`producto agregado correctamente, puedes encontrar tu carrito aqui: ${url}carts/${data.cartId}`)
+    alert(`producto agregado correctamente, puedes encontrar tu carrito aqui: ${url}/carts/${data.cartId}`)
   } else {
     alert('ha ocurrido un error')
   }

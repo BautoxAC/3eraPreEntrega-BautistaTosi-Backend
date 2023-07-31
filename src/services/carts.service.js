@@ -39,7 +39,7 @@ export class CartManagerDBService {
       if (!product) {
         return newMessage('failure', 'product not found', '')
       }
-      const productRepeated = cart.products.find(pro => pro.idProduct.toString() === product._id.toString())
+      const productRepeated = cart.products.find(pro => pro.idProduct._id.toString() === product._id.toString())
       let messageReturn = {}
       if (productRepeated) {
         const positionProductRepeated = cart.products.indexOf(productRepeated)

@@ -1,9 +1,6 @@
 import express from 'express'
-import { MessageManagerDBService } from '../services/message.service.js'
+import { isNotAdmin } from './../middlewares/auth.js'
+import { ChatController } from '../controller/chat.controller.js'
 export const chatRouter = express.Router()
-const MessageManager = new MessageManagerDBService()
-chatRouter.get('/', async (req, res) => {
-  const { logged, user } = req.query
-  const messages = await MessageManager.getMessages()
-  return res.render('chat', { logged, messages: messages.reverse(), user })
-})
+const ChatControllerRouting = new ChatController()
+chatRouter.get('/', isNotAdmin, ChatControllerRouting.getMessages)

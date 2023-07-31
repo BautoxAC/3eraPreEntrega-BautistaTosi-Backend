@@ -1,14 +1,14 @@
 import { newMessage } from '../utils.js'
-import { MessageManagerDBDAO } from '../DAO/DB/messageManagerDB.dao.js'
+import { ChatManagerDBDAO } from '../DAO/DB/chatManagerDB.dao.js'
 import { UserManagerDBDAO } from '../DAO/DB/userManagerDB.dao.js'
 const UserManagerDB = new UserManagerDBDAO()
-const MessageManagerDB = new MessageManagerDBDAO()
-export class MessageManagerDBService {
+const ChatManagerDB = new ChatManagerDBDAO()
+export class ChatManagerDBService {
   async addMessage (message, userName) {
     try {
       const user = await UserManagerDB.getUserByUserName(userName)
       if (user) {
-        const lastAdded = await MessageManagerDB.addMessage(message, userName)
+        const lastAdded = await ChatManagerDB.addMessage(message, userName)
         return newMessage('success', 'Message added successfully', lastAdded)
       } else {
         return newMessage('failure', 'The user was not foud', '')
@@ -21,7 +21,7 @@ export class MessageManagerDBService {
 
   async getMessages () {
     try {
-      const messages = await MessageManagerDB.getMessages()
+      const messages = await ChatManagerDB.getMessages()
       return newMessage('success', 'Messages got', messages)
     } catch (e) {
       console.log(e)

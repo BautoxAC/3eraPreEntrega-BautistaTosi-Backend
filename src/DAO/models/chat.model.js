@@ -5,4 +5,4 @@ const schema = new Schema({
   user: { type: String, required: true, unique: false, max: 65 }
 })
 
-export const messageModel = model('messages', schema)
+export const chatModel = model('chat', schema)

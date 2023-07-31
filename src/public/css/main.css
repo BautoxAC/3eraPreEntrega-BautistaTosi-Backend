@@ -123,3 +123,13 @@ form {
     margin-left: 40%;
     font-size: 1.5rem;
 }
+
+.carrito img{
+    height: 7rem;
+    width: 7rem;
+    object-fit: contain;
+    padding-top: 1rem;
+    position: absolute;
+    left: 50%;
+    top: 0;
+}

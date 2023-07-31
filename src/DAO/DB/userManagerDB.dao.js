@@ -13,7 +13,7 @@ export class UserManagerDBDAO {
 
   async getUserByUserName (userName) {
     try {
-      const user = await userModel.findOne({ userName }).lean()
+      const user = await userModel.findOne({ email: userName }).lean()
       return user
     } catch (e) {
       console.log(e)

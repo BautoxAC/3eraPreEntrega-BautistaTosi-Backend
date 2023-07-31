@@ -1,3 +1,6 @@
+import { UserManagerDBService } from '../services/user.service.js'
+import { newMessage } from '../utils.js'
+const UserManager = new UserManagerDBService()
 export function isUser (req, res, next) {
   if (req.session?.user?.email) {
     return next()
@@ -19,4 +22,26 @@ export function AdminCredentials (req, res, next) {
     return res.redirect('/products')
   }
   return next()
+}
+
+export function isNotAdmin (req, res, next) {
+  if (req.session?.user?.role === 'Admin') {
+    return res.status(403).render('error', { error: 'error de autorización!' })
+  }
+  return next()
+}
+
+export async function isYourCart (req, res, next) {
+  try {
+    const Id = req.params.cid
+    const user = await UserManager.getUserByUserName(req.session?.user?.email)
+    if (user.cart === Id) {
+      return next()
+    } else {
+      return res.status(403).render('error', { error: 'error de autorización! Este no es tu carrito' })
+    }
+  } catch (e) {
+    console.log(e)
+    return newMessage('failure', 'Failed to identify if this cart is yours', e)
+  }
 }
