@@ -1,4 +1,3 @@
-const url = window.location.origin
 const URLactual = window.location.href
 const port = window.location.port
 const queries = URLactual.split('?')

@@ -133,3 +133,18 @@ form {
     left: 50%;
     top: 0;
 }
+.perfil img{
+    height: 4rem;
+    width: 4rem;
+    object-fit: contain;
+    position: absolute;
+    left: 10%;
+    top: 0;
+}
+/* vista /carts/:cid */
+.total{
+    width: 100%;
+    margin: .2rem;
+    text-align: center;
+    font-size: 1.5rem;
+}

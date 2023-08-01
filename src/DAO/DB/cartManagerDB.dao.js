@@ -1,6 +1,9 @@
 import { cartModel } from '../models/carts.model.js'
+import { ticketModel } from '../models/ticket.model.js'
+import { v4 as uuidv4 } from 'uuid'
+import { formattedDate } from '../../utils.js'
 export class CartManagerDBDAO {
-  async getCartById(id) {
+  async getCartById (id) {
     try {
       const cartFindId = await cartModel.findOne({ _id: id }).populate('products.idProduct').lean()
       return cartFindId
@@ -10,7 +13,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async addCart() {
+  async addCart () {
     try {
       const lastAdded = await cartModel.create({ products: [] })
       return lastAdded
@@ -20,7 +23,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async addProduct(cart) {
+  async addProduct (cart) {
     try {
       await cartModel.updateOne({ _id: cart._id }, cart)
       return cart
@@ -30,7 +33,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async deleteProduct(cartFindId) {
+  async deleteProduct (cartFindId) {
     try {
       await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
       return cartFindId
@@ -40,7 +43,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async addNewProducts(cartFindId) {
+  async addNewProducts (cartFindId) {
     try {
       await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
       return cartFindId
@@ -50,7 +53,7 @@ export class CartManagerDBDAO {
     }
   }
 
-  async deleteAllProducts(cartFindId) {
+  async deleteAllProducts (cartFindId) {
     try {
       await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
       return cartFindId
@@ -60,13 +63,23 @@ export class CartManagerDBDAO {
     }
   }
 
-  async updateQuantityProduct(cartFindId) {
+  async updateQuantityProduct (cartFindId) {
     try {
       await cartModel.updateOne({ _id: cartFindId._id }, cartFindId)
       return cartFindId
     } catch (e) {
       console.log(e)
       throw new Error('Failed to update the quantity of products in a cart in DAO (check the data)')
+    }
+  }
+
+  async createATicketToBuy (purchaser, amount) {
+    try {
+      const newTicket = await ticketModel.create({ code: uuidv4(), purchase_datetime: formattedDate, purchaser, amount })
+      return newTicket
+    } catch (e) {
+      console.log(e)
+      throw new Error('Failed to create the ticket in a cart in DAO (check the data)')
     }
   }
 }

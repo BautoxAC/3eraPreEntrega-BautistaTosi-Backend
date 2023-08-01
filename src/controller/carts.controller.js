@@ -40,4 +40,10 @@ export class CartsController {
     const quantity = req.body
     return res.status(200).json(await list.updateQuantityProduct(idCart, idProduct, quantity))
   }
+
+  async createATicketToBuy (req, res) {
+    const idCart = req.session.user.cart
+    const purchaser = req.session.user.email
+    return res.status(200).json(await list.createATicketToBuy(idCart, purchaser))
+  }
 }

@@ -28,12 +28,12 @@ export const __filename = fileURLToPath(import.meta.url)
 export const __dirname = path.dirname(__filename)
 
 // -------------Mensaje de status---------------------------
-export function newMessage(status, message, data) {
+export function newMessage (status, message, data) {
   return { status, message, data }
 }
 
 // --------------Socket Server---------------------------
-export function connectSocketServer(httpServer) {
+export function connectSocketServer (httpServer) {
   const socketServer = new Server(httpServer)
   socketServer.on('connection', async (socket) => {
     console.log('cliente conectado')
@@ -80,7 +80,7 @@ export function connectSocketServer(httpServer) {
 }
 // ------------ MONGO DB ------------------
 const { mongoUrl } = config
-export async function connectMongo() {
+export async function connectMongo () {
   try {
     await connect(`${mongoUrl}`)
   } catch (e) {
@@ -92,3 +92,8 @@ export async function connectMongo() {
 // ----------------- BCRYPT ---------------------
 export const createHash = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 export const isValidPassword = (password, hashPassword) => bcrypt.compareSync(password, hashPassword)
+
+// ---------------- Current time----------------
+
+const currentDateAndTime = new Date()
+export const formattedDate = currentDateAndTime.toLocaleString('en-GB')

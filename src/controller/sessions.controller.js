@@ -1,3 +1,4 @@
+import { CurrentUser } from '../DAO/DTOs/currentUser.dto.js'
 export class SessionsController {
   redirectHome (req, res) {
     req.session.user = req.user
@@ -5,6 +6,7 @@ export class SessionsController {
   }
 
   seeCurrentSession (req, res) {
-    return res.status(200).json({ Session: req.session })
+    const CurrentUserDTO = new CurrentUser(req.session.user)
+    return res.status(200).json({ Session: CurrentUserDTO })
   }
 }

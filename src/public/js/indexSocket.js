@@ -8,7 +8,7 @@ const stock = document.getElementById('stock')
 const file = document.getElementById('file')
 const price = document.getElementById('price')
 const list = document.getElementById('list')
-function renderProducts(products) {
+function renderProducts (products) {
   list.innerHTML = ''
   for (let i = 0; i < products.length; i++) {
     const product = products[i]

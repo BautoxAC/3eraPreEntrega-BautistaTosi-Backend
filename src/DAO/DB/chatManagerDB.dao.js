@@ -1,6 +1,6 @@
 import { chatModel } from '../models/chat.model.js'
 export class ChatManagerDBDAO {
-  async addMessage(message, userName) {
+  async addMessage (message, userName) {
     try {
       await chatModel.create({ message, user: userName })
       const lastAdded = await chatModel.findOne({}).sort({ _id: -1 }).lean()
@@ -11,7 +11,7 @@ export class ChatManagerDBDAO {
     }
   }
 
-  async getMessages() {
+  async getMessages () {
     try {
       const messages = await chatModel.find({}).lean()
       return messages

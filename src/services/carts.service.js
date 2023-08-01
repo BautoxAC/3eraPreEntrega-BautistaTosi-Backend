@@ -4,11 +4,12 @@ import { ProductManagerDBService } from './products.service.js'
 const listProducts = new ProductManagerDBService()
 const CartManagerDAO = new CartManagerDBDAO()
 export class CartManagerDBService {
-  async getCartById (id) {
+  async getCartById(id) {
     try {
       const cartFindId = await CartManagerDAO.getCartById(id)
+      const totalPrices = cartFindId.products.reduce((acc, pro) => acc + parseInt(pro.idProduct.price), 0)
       if (cartFindId) {
-        return newMessage('success', 'Found successfully', cartFindId.products || [])
+        return newMessage('success', 'Found successfully', { products: [...cartFindId.products], totalPrices } || [])
       } else {
         return newMessage('failure', 'Cart not Found', '')
       }
@@ -18,7 +19,7 @@ export class CartManagerDBService {
     }
   }
 
-  async addCart () {
+  async addCart() {
     try {
       const lastAdded = await CartManagerDAO.addCart()
       return newMessage('success', 'cart added successfully', lastAdded)
@@ -28,7 +29,7 @@ export class CartManagerDBService {
     }
   }
 
-  async addProduct (idCart, idProduct) {
+  async addProduct(idCart, idProduct) {
     try {
       const cart = await CartManagerDAO.getCartById(idCart)
       if (!cart) {
@@ -61,11 +62,11 @@ export class CartManagerDBService {
     }
   }
 
-  async deleteProduct (idCart, idProduct) {
+  async deleteProduct(idCart, idProduct) {
     try {
       const cartFindId = await CartManagerDAO.getCartById(idCart)
       const cartProducts = cartFindId.products
-      const positionProduct = cartFindId.products.indexOf(cartFindId.products.find(pro => pro.idProduct === idProduct))
+      const positionProduct = cartProducts.indexOf(cartFindId.products.find(pro => pro.idProduct === idProduct))
       cartProducts.splice(positionProduct, 1)
       await CartManagerDAO.deleteProduct(cartFindId)
       return newMessage('success', 'product deleted', cartFindId)
@@ -75,7 +76,7 @@ export class CartManagerDBService {
     }
   }
 
-  async addNewProducts (idCart, products) {
+  async addNewProducts(idCart, products) {
     try {
       if (!Array.isArray(products) && products.length === 0) {
         throw new Error('You must pass an array and at least one product')
@@ -98,7 +99,7 @@ export class CartManagerDBService {
     }
   }
 
-  async deleteAllProducts (idCart) {
+  async deleteAllProducts(idCart) {
     try {
       const cartFindId = await CartManagerDAO.getCartById(idCart)
       cartFindId.products = []
@@ -110,7 +111,7 @@ export class CartManagerDBService {
     }
   }
 
-  async updateQuantityProduct (idCart, idProduct, quantity) {
+  async updateQuantityProduct(idCart, idProduct, quantity) {
     try {
       const quantityNumber = Object.values(quantity)
       if (typeof (quantityNumber[0]) !== 'number') { return newMessage('failure', 'the quantity must be a number', '') }
@@ -121,6 +122,33 @@ export class CartManagerDBService {
       productToUpdate.quantity = quantityNumber[0]
       await CartManagerDAO.updateQuantityProduct(cartFindId)
       return newMessage('success', 'the quantity of product was updated', cartFindId)
+    } catch (e) {
+      console.log(e)
+      return newMessage('failure', 'A problem ocurred', e)
+    }
+  }
+
+  async createATicketToBuy(idCart, purchaser) {
+    try {
+      const cart = await this.getCartById(idCart)
+      const productsCouldBuy = []
+      const productsCouldNotBuy = []
+      for (let i = 0; i < cart.data.products.length; i++) {
+        const product = cart.data.products[i]
+        if (product.idProduct.stock >= product.quantity) {
+          productsCouldBuy.push(product)
+          continue
+        }
+        productsCouldNotBuy.push(product.idProduct._id)
+      }
+      const total = productsCouldBuy.reduce((acc, pro) => acc + parseInt(pro.idProduct.price), 0)
+      const ticket = await CartManagerDAO.createATicketToBuy(purchaser, total)
+      for (let i = 0; i < productsCouldBuy.length; i++) {
+        const product = productsCouldBuy[i]
+        await listProducts.updateProduct(product.idProduct._id, { stock: product.idProduct.stock - product.quantity })
+        this.deleteProduct(idCart, product.idProduct._id)
+      }
+      return newMessage('success', 'the ticket of the product was created', { ticket, productsCouldNotBuy })
     } catch (e) {
       console.log(e)
       return newMessage('failure', 'A problem ocurred', e)
