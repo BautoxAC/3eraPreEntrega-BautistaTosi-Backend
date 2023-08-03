@@ -12,11 +12,10 @@ buttonPurchase.addEventListener('click', async () => {
       return response.json()
     })
     .then(data => {
-      console.log(data)
       alert('compra realizada')
-      /* setTimeout(() => {
+      setTimeout(() => {
         location.reload()
-      }, 5000) */
+      }, 10000)
     })
     .catch(error => console.log(error))
 })

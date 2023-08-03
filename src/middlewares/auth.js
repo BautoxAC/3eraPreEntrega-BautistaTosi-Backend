@@ -35,7 +35,7 @@ export async function isYourCart (req, res, next) {
   try {
     const Id = req.params.cid
     const user = await UserManager.getUserByUserName(req.session?.user?.email)
-    if (user.data.cart.toString() === Id) {
+    if (user?.data?.cart?.toString() === Id) {
       return next()
     } else {
       return res.status(403).render('error', { error: 'error de autorización! Este no es tu carrito' })

@@ -141,6 +141,9 @@ form {
     left: 10%;
     top: 0;
 }
+.chat img{
+    left: 25%;
+}
 /* vista /carts/:cid */
 .total{
     width: 100%;
