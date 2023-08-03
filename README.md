@@ -1,6 +1,6 @@
 # Explicación
 
-Este proyecto es un API básica que sigue las consignas de la segunda preEntrega del proyecto final de CoderHouse y la segunda practica integradora funcionando con MongoDB y hay views hechas con handlebars. Ahora tiene un sistema de autenticacion basico con passport local y passport-github en la vista /auth/register y /auth/login
+Este proyecto es un API básica que sigue las consignas de la tercera preEntrega del proyecto final de CoderHouse funcionando con MongoDB y hay views hechas con handlebars. Ahora el usuario es capaz de crear un ticket para terminar su compra, puede ver su carrito, el chat y puede ver su perfil.
 
 ### `npm start`
 
@@ -19,9 +19,13 @@ Inicia el Servidor en [http://localhost:8080]
 
 /api/sessions/current para ver tu sesion
 
-/products es una vista de los productos con paginacion que puede recibir por query de la url: limit, sort, category y page
+/products es una vista de los productos con paginacion que puede recibir por query de la url: limit, sort, category y page; y tiene acceso a otras funcionalidades que puede hacer el usuario
 
 /cart/:cid donde le pones el id del carrito y se renderizan los que tiene
+
+/realtimeproducts para poder agregar
+
+/chat para el chat
 
 ## Dependencias
 
